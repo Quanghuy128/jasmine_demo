@@ -82,23 +82,21 @@ describe("Matchers Handling", () => {
   });
 })
 
-//custome matchers
+//custom matchers
 const customMatchers = {
-  toBeGoofy: function (matchersUtil) {
+  toBeBearerString: function (matchersUtil) {
     return {
       compare: function (actual, expected) {
-        console.log(actual, expected)
         if (expected === undefined) {
           expected = '';
         }
         const result = {
         };
-        result.pass = matchersUtil.equals(actual.hyuk, "gawrsh" + expected);
-        console.log(result.pass)
+        result.pass = matchersUtil.equals(actual.bearerString, "Bearer" + expected);
         if (result.pass) {
-          result.message = "Expected " + actual + " not to be quite so goofy";
+          result.message = "Expected " + actual + " not included Bearer";
         } else {
-          result.message = "Expected " + actual + " to be goofy, but it was not very goofy";
+          result.message = "Expected " + actual + " include Bearer";
         }
         return result;
       }
@@ -106,26 +104,26 @@ const customMatchers = {
   }
 };
 
-describe("Custom matcher: 'toBeGoofy'", function () {
+describe("Custom matcher: 'toBeBearerString'", function () {
   beforeEach(function () {
     jasmine.addMatchers(customMatchers);
   });
   it("is available on an expectation", function () {
     expect({
-      hyuk: 'gawrsh'
-    }).toBeGoofy();
+      bearerString: 'Bearer'
+    }).toBeBearerString();
   });
 
   it("can take an 'expected' parameter", function () {
     expect({
-      hyuk: 'gawrsh is fun'
-    }).toBeGoofy(' is fun');
+      bearerString: 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0aHVvbmduZ28iLCJwYXlsb2FkIjp7InJvbGVOYW1lIjoiQ2FuZGlkYXRlIn0sImlzcyI6IkhSX1RFQU0iLCJleHAiOjE2NjQ2MTY4NTQsImlhdCI6MTY2NDYwOTY1NH0.rFCZZW1ZPK455t5BiuJ4uTbNtvGfSWn_LYru3g44F8dd5PFzI7Wrm5AqG33TseW5UOJXytApGNOM2U0ay_GxQw'
+    }).toBeBearerString(' eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0aHVvbmduZ28iLCJwYXlsb2FkIjp7InJvbGVOYW1lIjoiQ2FuZGlkYXRlIn0sImlzcyI6IkhSX1RFQU0iLCJleHAiOjE2NjQ2MTY4NTQsImlhdCI6MTY2NDYwOTY1NH0.rFCZZW1ZPK455t5BiuJ4uTbNtvGfSWn_LYru3g44F8dd5PFzI7Wrm5AqG33TseW5UOJXytApGNOM2U0ay_GxQw');
   });
 
   it("can be negated", function () {
     expect({
-      hyuk: 'this is fun'
-    }).not.toBeGoofy();
+      bearerString: 'empty'
+    }).not.toBeBearerString();
   });
 });
 
