@@ -86,11 +86,12 @@ var orderHandling = (clientAccount, product, inventory, inventoryThreshold, cred
     var accStatus = accountStatus(clientAccount);
     var creStatus = creditStatus(clientAccount, creditCheckMode);
     var proStatus = productStatus(product, inventory, inventoryThreshold);
+    console.log(accStatus,creStatus,proStatus)
 
     if ((accStatus === "invalid" || creStatus === "invalid" || proStatus === "invalid") ||
-        (accStatus === "acceptable" || creStatus === "adverse" || proStatus != "available") ||
-        (accStatus === "adverse" || creStatus === "good" || proStatus === "soldout") ||
-        (accStatus === "adverse" || creStatus === "adverse"))
+        (accStatus === "acceptable" && creStatus === "adverse" && proStatus != "available") ||
+        (accStatus === "adverse" && creStatus === "good" && proStatus === "soldout") ||
+        (accStatus === "adverse" && creStatus === "adverse"))
         return "rejected";
 
     else if ((accStatus === "excellent") || (accStatus === "good" && creStatus === "good") ||
@@ -129,6 +130,7 @@ describe("Statement Coverage", () => {
         const customer = new clientAccount(30, 400, 80);
         const newProduct = new product("Product 2", 10);
         var inventory = [newProduct];
+        console.log(orderHandling(customer, "Product 2", inventory, 5, "default"))
         expect(orderHandling(customer, "Product 2", inventory, 5, "default")).toBe("accepted");
     })
     it("Statement: underReview", () => {
