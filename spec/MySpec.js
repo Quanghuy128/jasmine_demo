@@ -15,6 +15,7 @@ describe("Handle Add & Minus Calculating", function () {
   });
   it("2 + 2 = 4", function () {
     //expect == assert => Check Accurancy 
+    // expect(EXPECTED_VALUE).toBe(RETURN_VALUE)
     expect(4).toBe(cal.add(2, 2));
   });
 
@@ -39,7 +40,7 @@ describe("Handle Multiply & Divide Calculating", function () {
 
 // Some Matchers in Jasmine
 // Matchers are a functions which compare result to EXPECTED VALUE vs RETURN VALUE
-// expect(EXPECTED_VALUE).toBe(RETURN_VALUE)
+
 describe("Matchers Handling", () => {
   // .not.toBe(RETURN_VALUE)
   it("3 * 4 != 13", function () {
@@ -49,7 +50,7 @@ describe("Matchers Handling", () => {
   it("f1 == f2", function () {
     var f1 = { a: 1, b: 2 };
     var f2 = { a: 1, b: 2 };
-    //foo == bar có kể quả false
+    //f1 == f2 có kểt quả false
     //Nhưng match toEqual vẫn so sánh đúng
     expect(f1).toEqual(f2);
   });
@@ -81,8 +82,64 @@ describe("Matchers Handling", () => {
   });
 })
 
+//custome matchers
+const customMatchers = {
+  toBeGoofy: function (matchersUtil) {
+    return {
+      compare: function (actual, expected) {
+        console.log(actual, expected)
+        if (expected === undefined) {
+          expected = '';
+        }
+        const result = {
+        };
+        result.pass = matchersUtil.equals(actual.hyuk, "gawrsh" + expected);
+        console.log(result.pass)
+        if (result.pass) {
+          result.message = "Expected " + actual + " not to be quite so goofy";
+        } else {
+          result.message = "Expected " + actual + " to be goofy, but it was not very goofy";
+        }
+        return result;
+      }
+    };
+  }
+};
+
+describe("Custom matcher: 'toBeGoofy'", function () {
+  beforeEach(function () {
+    jasmine.addMatchers(customMatchers);
+  });
+  it("is available on an expectation", function () {
+    expect({
+      hyuk: 'gawrsh'
+    }).toBeGoofy();
+  });
+
+  it("can take an 'expected' parameter", function () {
+    expect({
+      hyuk: 'gawrsh is fun'
+    }).toBeGoofy(' is fun');
+  });
+
+  it("can be negated", function () {
+    expect({
+      hyuk: 'this is fun'
+    }).not.toBeGoofy();
+  });
+});
+
 // beforeEach, afterEach, beforeAll, afterAll
 describe("Before and After Handling", function () {
+  beforeAll(function () {
+    //Runs 1 time before All test case run
+    console.log("Before All")
+  });
+
+  afterAll(function () {
+    //Runs 1 time after All test case run
+    console.log("After All")
+  });
 
   beforeEach(function () {
     //Runs MANY TIMES before a test case
@@ -94,15 +151,6 @@ describe("Before and After Handling", function () {
     console.log("afterEach")
   });
 
-  beforeAll(function () {
-    //Runs 1 time before All test case run
-    console.log("Before All")
-  });
-
-  afterAll(function () {
-    //Runs 1 time after All test case run
-    console.log("After All")
-  });
   it("1 + 2 = 3", function () {
     expect(3).toBe(1 + 2);
   });
@@ -112,8 +160,8 @@ describe("Before and After Handling", function () {
 
 });
 
-//Spy checks 1 function was called or not and use spy to be Mock Object
-//1. checks 1 function was called or not
+// Spy checks 1 function was called or not and use spy to be Mock Object
+// Module A depends on Module B , B is not completely handled => create fake B : mock
 describe("Spy Handling", function () {
   var student, learned = null;
 
@@ -122,11 +170,10 @@ describe("Spy Handling", function () {
       learn: function (subject) {
         learned = subject;
       },
+
     };
 
     //Spy to track learn of student
-    //.callThrough()
-    //.callFake(()=>{})
     spyOn(student, 'learn');
     student.learn('Software Testing')
   });
@@ -141,17 +188,14 @@ describe("Spy Handling", function () {
     expect(student.learn).toHaveBeenCalledWith('Software Testing');
   });
 
-  it("learned == null", function () {
-    //Spy prevents learn, so learned is null
-    expect(learned).toBe(null);
+  it("learned == Software Testing", function () {
+    expect(learned).not.toBe("Software Testing");
   });
 });
 
 
 
-
-
-// describe("Spy Handling", function () {
+// describe("Spy Handlings", function () {
 //   var student, learned = null;
 
 //   beforeEach(function () {
@@ -159,25 +203,15 @@ describe("Spy Handling", function () {
 //       learn: function (subject) {
 //         learned = subject;
 //       },
-//       subjectLearned: () => {
+//       a: () => {
 
 //       }
 //     };
 
 //     //Spy to track learn of student
-//     //.callThrough()
-//     //.callFake(()=>{})
-//     spyOn(student, 'subjectLearned').and.callFake(()=>'Software Testing')
-//     spyOn(student, 'learn');
-
-//     student.learn(student.subjectLearned())
-
-
-//   });
-
-//   //tracks that the spy was called
-//   it("true if this spy was called", function () {
-//     expect(student.learn).toHaveBeenCalled();
+//     spyOn(student, 'learn').and.callThrough();
+//     spyOn(student, 'a')
+//     student.learn(student.a())
 //   });
 
 //   //tracks all the arguments of its calls
@@ -185,12 +219,12 @@ describe("Spy Handling", function () {
 //     expect(student.learn).toHaveBeenCalledWith('Software Testing');
 //   });
 
-//   it("learned == Softwar Testing", function () {
-//     //Spy prevents learn, so learned is null
-//     expect(learned).toBe(null);
+//   it("learned == Software Testing", function () {
+//     expect(learned).toBe("Software Testing");
 //   });
-//   it("subjectLearned == null", function () {
-//     //Spy prevents learn, so learned is null
-//     expect(student.subjectLearned()).toBe('Software Testing');
+
+//   it("learned == Software Testing", function () {
+//     expect(student.a()).toBe("Software Testing");
 //   });
 // });
+
