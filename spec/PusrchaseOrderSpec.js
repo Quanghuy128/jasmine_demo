@@ -1,3 +1,18 @@
+class clientAccount {
+    constructor(age, balance, creditScore) {
+        this.age = age;
+        this.balance = balance;
+        this.creditScore = creditScore;
+    }
+}
+
+class product {
+    constructor(name, q) {
+        this.name = name;
+        this.q = q;
+    }
+}
+
 var getAgefactor = (clientAccount) => {
     var factor;
     if (clientAccount.age < 18 || clientAccount.age > 95)
@@ -86,7 +101,6 @@ var orderHandling = (clientAccount, product, inventory, inventoryThreshold, cred
     var accStatus = accountStatus(clientAccount);
     var creStatus = creditStatus(clientAccount, creditCheckMode);
     var proStatus = productStatus(product, inventory, inventoryThreshold);
-    console.log(accStatus,creStatus,proStatus)
 
     if ((accStatus === "invalid" || creStatus === "invalid" || proStatus === "invalid") ||
         (accStatus === "acceptable" && creStatus === "adverse" && proStatus != "available") ||
@@ -102,21 +116,6 @@ var orderHandling = (clientAccount, product, inventory, inventoryThreshold, cred
     else if ((accStatus === "acceptable" && creStatus === "good" && proStatus != "available") ||
         (accStatus === "adverse" && creStatus === "good" && proStatus === "limited"))
         return "pending";
-}
-
-class clientAccount {
-    constructor(age, balance, creditScore) {
-        this.age = age;
-        this.balance = balance;
-        this.creditScore = creditScore;
-    }
-}
-
-class product {
-    constructor(name, q) {
-        this.name = name;
-        this.q = q;
-    }
 }
 
 describe("Statement Coverage", () => {
