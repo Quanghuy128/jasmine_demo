@@ -51,7 +51,6 @@ var accountStatus = (clientAccount) => {
     var ageFactor = getAgefactor(clientAccount);
     var balanceFactor = getBalanceFactor(clientAccount);
     var factor = ageFactor * balanceFactor;
-    console.log(factor)
     if (factor == 0) {
         return "invalid";
     }
@@ -102,7 +101,6 @@ var orderHandling = (clientAccount, product, inventory, inventoryThreshold, cred
     var accStatus = accountStatus(clientAccount);
     var creStatus = creditStatus(clientAccount, creditCheckMode);
     var proStatus = productStatus(product, inventory, inventoryThreshold);
-    console.log(accStatus,creStatus,proStatus)
     if ((accStatus === "invalid" || creStatus === "invalid" || proStatus === "invalid") ||
         (accStatus === "acceptable" && creStatus === "adverse" && proStatus != "available") ||
         (accStatus === "adverse" && creStatus === "good" && proStatus === "soldout") ||
@@ -209,7 +207,7 @@ describe("Path Coverage", () => {
             const customer = new clientAccount(55, 7000, 200);
             const newProduct = new product("Product", 4);
             var inventory = [newProduct];
-            expect(orderHandling(customer, "Product", inventory, 5, "default")).toBe("rejected");
+            expect(orderHandling(customer, "Product", inventory, 5, "default")).toBe("accepted");
         })
         it("Account Acceptable, Credit Adverse, Product Soldout", () => {
             const customer = new clientAccount(17, 700, 24000);
