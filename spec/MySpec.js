@@ -15,7 +15,7 @@ describe("Handle Add & Minus Calculating", function () {
   });
   it("2 + 2 = 4", function () {
     //expect == assert => Check Accurancy 
-    // expect(EXPECTED_VALUE).toBe(RETURN_VALUE)
+    // expect(ACTUAL_VALUE).toBe(EXPECTED_VALUE)
     expect(4).toBe(cal.add(2, 2));
   });
 
