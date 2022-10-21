@@ -51,6 +51,7 @@ var accountStatus = (clientAccount) => {
     var ageFactor = getAgefactor(clientAccount);
     var balanceFactor = getBalanceFactor(clientAccount);
     var factor = ageFactor * balanceFactor;
+    console.log(factor)
     if (factor == 0) {
         return "invalid";
     }
@@ -101,7 +102,7 @@ var orderHandling = (clientAccount, product, inventory, inventoryThreshold, cred
     var accStatus = accountStatus(clientAccount);
     var creStatus = creditStatus(clientAccount, creditCheckMode);
     var proStatus = productStatus(product, inventory, inventoryThreshold);
-
+    console.log(accStatus,creStatus,proStatus)
     if ((accStatus === "invalid" || creStatus === "invalid" || proStatus === "invalid") ||
         (accStatus === "acceptable" && creStatus === "adverse" && proStatus != "available") ||
         (accStatus === "adverse" && creStatus === "good" && proStatus === "soldout") ||
@@ -111,7 +112,7 @@ var orderHandling = (clientAccount, product, inventory, inventoryThreshold, cred
     else if ((accStatus === "excellent") || (accStatus === "good" && creStatus === "good") ||
         (accStatus === "acceptable" && creStatus === "good" && proStatus === "available") || (accStatus === "adverse" && creStatus === "good" && proStatus === "available"))
         return "accepted";
-    else if ((accStatus === "good" || creStatus === "adverse") || (accStatus === "acceptable" || creStatus === "adverse" && proStatus === "available"))
+    else if ((accStatus === "good" && creStatus === "adverse") || (accStatus === "acceptable" && creStatus === "adverse" && proStatus === "available"))
         return "underReview";
     else if ((accStatus === "acceptable" && creStatus === "good" && proStatus != "available") ||
         (accStatus === "adverse" && creStatus === "good" && proStatus === "limited"))
@@ -129,7 +130,6 @@ describe("Statement Coverage", () => {
         const customer = new clientAccount(30, 400, 80);
         const newProduct = new product("Product 2", 10);
         var inventory = [newProduct];
-        console.log(orderHandling(customer, "Product 2", inventory, 5, "default"))
         expect(orderHandling(customer, "Product 2", inventory, 5, "default")).toBe("accepted");
     })
     it("Statement: underReview", () => {
@@ -217,6 +217,47 @@ describe("Path Coverage", () => {
             var inventory = [newProduct];
             expect(orderHandling(customer, "Product", inventory, 5, "default")).toBe("rejected");
         })
-        
+    })
+    describe("Accepted", () => {
+        it("Account Acceptable, Credit Good, Product Available", () => {
+            const customer = new clientAccount(30, 400, 80);
+            const newProduct = new product("Product", 10);
+            var inventory = [newProduct];
+            expect(orderHandling(customer, "Product", inventory, 5, "default")).toBe("accepted");
+        })
+        it("Account Adverse, Credit Good, Product Available", () => {
+            const customer = new clientAccount(21, 99, 80);
+            const newProduct = new product("Product", 10);
+            var inventory = [newProduct];
+            expect(orderHandling(customer, "Product", inventory, 5, "default")).toBe("accepted");
+        })
+    })
+    describe("UnderReview", () => {
+        it("Account Acceptable, Credit Adverse, Product Available", () => {
+            const customer = new clientAccount(30, 400, 70);
+            const newProduct = new product("Product", 10);
+            var inventory = [newProduct];
+            expect(orderHandling(customer, "Product", inventory, 5, "default")).toBe("underReview");
+        })
+        it("Account Good, Credit Adverse", () => {
+            const customer = new clientAccount(30, 1100, 70);
+            const newProduct = new product("Product", 10);
+            var inventory = [newProduct];
+            expect(orderHandling(customer, "Product", inventory, 5, "default")).toBe("underReview");
+        })
+    })
+    describe("Pending", () => {
+        it("Account Acceptable, Credit Good, Product Limited", () => {
+            const customer = new clientAccount(30, 400, 80);
+            const newProduct = new product("Product", 4);
+            var inventory = [newProduct];
+            expect(orderHandling(customer, "Product", inventory, 5, "default")).toBe("pending");
+        })
+        it("Account Adverse, Credit Good, Product Limited", () => {
+            const customer = new clientAccount(21, 99, 80);
+            const newProduct = new product("Product", 4);
+            var inventory = [newProduct];
+            expect(orderHandling(customer, "Product", inventory, 5, "default")).toBe("pending");
+        })
     })
 })
